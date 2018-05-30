@@ -34,8 +34,8 @@ def main():
     postman_testset_file = args.postman_testset_file
     output_testset_file = args.output_testset_file
 
-    print postman_testset_file
-    print output_testset_file
+    print(postman_testset_file)
+    print(output_testset_file)
 
     if not postman_testset_file or not postman_testset_file.endswith(".json"):
         logging.error("postman_testset_file file not specified.")
@@ -54,15 +54,15 @@ def main():
         else:
             logging.error("Converted file could only be in YAML or JSON format.")
             sys.exit(1)
-    print output_file_type
-    print output_testset_file
+    print(output_file_type)
+    print(output_testset_file)
 
     postman_parser = PostmanParser(postman_testset_file)
 
     if output_file_type == "JSON":
         postman_parser.gen_json(output_testset_file)
-    else:
-        postman_parser.gen_yaml(output_testset_file)
+    # else:
+    #     postman_parser.gen_yaml(output_testset_file)
 
     return 0
 

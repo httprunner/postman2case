@@ -25,6 +25,7 @@ class PostmanParser(object):
         """
         temp = {}
         temp["name"] = item["name"]
+        temp["def"] = item["name"]
         temp["validate"] = []
 
         request = {}
@@ -77,7 +78,7 @@ class PostmanParser(object):
             if "item" in folder.keys():
                 for item in folder["item"]:
                     temp = self.parse_each_item(item)
-                    result.append({"test":temp})
+                    result.append({"api":temp})
             else:
                 temp = self.parse_each_item(folder)
                 result.append(temp)

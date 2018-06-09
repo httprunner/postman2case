@@ -1,8 +1,6 @@
-import base64
 import io
 import json
 import logging
-import sys
 
 from postman2case.compat import ensure_ascii
 
@@ -12,6 +10,7 @@ from collections import OrderedDict
 class PostmanParser(object):
     def __init__(self, postman_testcase_file):
         self.postman_testcase_file = postman_testcase_file
+
 
     def read_postman_data(self):
         with open(self.postman_testcase_file, 'r') as file:
@@ -23,17 +22,24 @@ class PostmanParser(object):
     def parse_each_item(self, item):
         """ parse each item in postman to testcase in httprunner
         """
-        temp = {}
-        temp["name"] = item["name"]
-        temp["def"] = item["name"]
-        temp["validate"] = []
+        api = {}
+        api["name"] = item["name"]
+        api["def"] = item["name"]
+        api["validate"] = []
 
         request = {}
         request["method"] = item["request"]["method"]
 
-        if request["method"] == "POST":
+        url = ""
+
+        if isinstance(item["request"]["url"], str):
+            url = item["request"]["url"]
+        elif isinstance(item["request"]["url"], dict):
             if "raw" in item["request"]["url"].keys():
-                request["url"] = item["request"]["url"]["raw"]
+                url= item["request"]["url"]["raw"]
+
+        if request["method"] == "POST":
+            request["url"] = url
             
             headers = {}
             for header in item["request"]["header"]:
@@ -47,8 +53,6 @@ class PostmanParser(object):
                     body[param["key"]] = param["value"]
             request["json"] = body
         else:
-            if "raw" in item["request"]["url"].keys():
-                url = item["request"]["url"]["raw"]
             request["url"] = url.split("?")[0]
             headers = {}
             for header in item["request"]["header"]:
@@ -61,8 +65,8 @@ class PostmanParser(object):
                     body[query["key"]] = query["value"]
             request["params"] = body
 
-        temp["request"] = request
-        return temp
+        api["request"] = request
+        return api
 
 
 
@@ -77,11 +81,11 @@ class PostmanParser(object):
         for folder in postman_data["item"]:
             if "item" in folder.keys():
                 for item in folder["item"]:
-                    temp = self.parse_each_item(item)
-                    result.append({"api":temp})
+                    api = self.parse_each_item(item)
+                    result.append({"api": api})
             else:
-                temp = self.parse_each_item(folder)
-                result.append(temp)
+                api = self.parse_each_item(folder)
+                result.append({"api": api})
 
         with io.open(output_testset_file, 'w', encoding="utf-8") as outfile:
             my_json_str = json.dumps(result, ensure_ascii=ensure_ascii, indent=4)

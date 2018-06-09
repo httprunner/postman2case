@@ -1,0 +1,60 @@
+{
+	"variables": [],
+	"info": {
+		"name": "demo",
+		"_postman_id": "a043791c-f426-1c72-446f-4af675de77a9",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "test_get",
+			"request": {
+				"url": {
+					"raw": "http://www.baidu.com?search=345",
+					"protocol": "http",
+					"host": [
+						"www",
+						"baidu",
+						"com"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": "345",
+							"equals": true,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "test_post",
+			"request": {
+				"url": "http://www.baidu.com",
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "search",
+							"value": "123",
+							"description": "",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}

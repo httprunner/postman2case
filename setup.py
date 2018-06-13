@@ -7,8 +7,6 @@ from setuptools import find_packages, setup
 with io.open("README.md", encoding='utf-8') as f:
     long_description = f.read()
 
-install_requires = open("requirements.txt").readlines()
-
 setup(
     name='postman2case',
     version=__version__,
@@ -21,9 +19,12 @@ setup(
     packages=find_packages(exclude=['test.*', 'test']),
     package_data={},
     keywords='postman converter json',
-    install_requires=install_requires,
+    install_requires=[],
     classifiers=[
         "Development Status :: 3 - Alpha",
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6'
     ],
     entry_points={

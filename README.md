@@ -1,6 +1,6 @@
 # postman2case
 
-[![LICENSE](https://img.shields.io/github/license/HttpRunner/postman2case.svg)](https://github.com/HttpRunner/postman2case/blob/master/LICENSE) [![Build Status](https://travis-ci.org/HttpRunner/postman2case.svg?branch=master)](https://travis-ci.org/HttpRunner/postman2case)
+[![LICENSE](https://img.shields.io/github/license/HttpRunner/postman2case.svg)](https://github.com/HttpRunner/postman2case/blob/master/LICENSE) [![Build Status](https://travis-ci.org/HttpRunner/postman2case.svg?branch=master)](https://travis-ci.org/HttpRunner/postman2case) [![coveralls](https://coveralls.io/repos/github/HttpRunner/postman2case/badge.svg?branch=master)](https://coveralls.io/github/HttpRunner/postman2case?branch=master)
 
 Convert postman data to JSON testcases for HttpRunner.
 

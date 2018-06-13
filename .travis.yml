@@ -2,9 +2,14 @@ sudo: false
 language: python
 python:
   - 2.7
-  - 3.3
   - 3.4
   - 3.5
   - 3.6
+install:
+  - pip install pipenv --upgrade-strategy=only-if-needed
+  - pipenv install --dev
 script:
-  - python -m unittest discover
+  - pipenv run python setup.py install
+  - pipenv run coverage run --source=postman2case -m unittest discover
+after_success:
+  - pipenv run coveralls

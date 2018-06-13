@@ -15,7 +15,6 @@ def main():
     parser.add_argument('--log-level', default='INFO',
         help="Specify logging level, default is INFO.")
 
-
     parser.add_argument('postman_testset_file', nargs='?',
         help="Specify postman testset file.")
 
@@ -51,7 +50,6 @@ def main():
             sys.exit(1)
 
     postman_parser = PostmanParser(postman_testset_file)
-
     postman_parser.gen_json(output_testset_file)
 
     return 0

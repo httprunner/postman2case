@@ -3,9 +3,12 @@ import os
 import json
 from postman2case.core import PostmanParser
 
+
 class TestParser(unittest.TestCase):
+
     def setUp(self):
         self.postman_parser = PostmanParser("tests/data/test.json")
+
     def test_init(self):
         self.assertEqual(self.postman_parser.postman_testcase_file, "tests/data/test.json")
 
@@ -14,7 +17,7 @@ class TestParser(unittest.TestCase):
             content = json.load(f)
         other_content = self.postman_parser.read_postman_data()
         self.assertEqual(content, other_content)
-    
+
     def test_parse_each_item_get(self):
         item = {
 			"name": "test_get",
@@ -60,7 +63,7 @@ class TestParser(unittest.TestCase):
 
         fun_result = self.postman_parser.parse_each_item(item)
         self.assertEqual(result, fun_result)
-    
+
     def test_parse_each_item_post(self):
         item = {
 			"name": "test_post",
@@ -98,9 +101,9 @@ class TestParser(unittest.TestCase):
         }
         fun_result = self.postman_parser.parse_each_item(item)
         self.assertEqual(result, fun_result)
-    
+
     def test_gen_json(self):
         output_file = "tests/data/output.json"
         self.postman_parser.gen_json(output_file)
         os.remove(output_file)
-        
+

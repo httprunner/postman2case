@@ -1,23 +1,20 @@
 import io
 import json
 import logging
+from collections import OrderedDict
 
 from postman2case.compat import ensure_ascii
-
-from collections import OrderedDict
 
 
 class PostmanParser(object):
     def __init__(self, postman_testcase_file):
         self.postman_testcase_file = postman_testcase_file
 
-
     def read_postman_data(self):
         with open(self.postman_testcase_file, 'r') as file:
             postman_data = json.load(file)
 
         return postman_data
-        
 
     def parse_each_item(self, item):
         """ parse each item in postman to testcase in httprunner
@@ -40,7 +37,7 @@ class PostmanParser(object):
 
         if request["method"] == "POST":
             request["url"] = url
-            
+
             headers = {}
             for header in item["request"]["header"]:
                 headers[header["key"]] = header["value"]
@@ -68,8 +65,6 @@ class PostmanParser(object):
         api["request"] = request
         return api
 
-
-
     def gen_json(self, output_testset_file):
         """ dump postman data to json testset
         """
@@ -94,5 +89,3 @@ class PostmanParser(object):
 
             outfile.write(my_json_str)
         logging.info("Generate JSON testset successfully: {}".format(output_testset_file))
-
-

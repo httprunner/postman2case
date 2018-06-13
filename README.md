@@ -1,24 +1,22 @@
-## postman2case
-------
+# postman2case
+
+[![LICENSE](https://img.shields.io/github/license/HttpRunner/postman2case.svg)](https://github.com/HttpRunner/postman2case/blob/master/LICENSE) [![Build Status](https://travis-ci.org/HttpRunner/postman2case.svg?branch=master)](https://travis-ci.org/HttpRunner/postman2case)
 
 Convert postman data to JSON testcases for HttpRunner.
 
+## usage
 
-### usage
-
-------
-
-To see ``postman2case`` version is 
+To see ``postman2case`` version:
 
 ```shell
-$ python3 main.py -V
+$ python main.py -V
 0.0.1
 ```
 
 To see available options, run
 
 ```shell
-$ python3 main.py -h
+$ python main.py -h
 usage: main.py [-h] [-V] [--log-level LOG_LEVEL]
                [postman_testset_file] [output_testset_file]
 
@@ -35,9 +33,7 @@ optional arguments:
                         Specify logging level, default is INFO.
 ```
 
-### examples
-
-------
+## examples
 
 In most cases, you can run ``postman2case`` like this:
 
@@ -57,9 +53,7 @@ $ python3 main.py test/test.json
 INFO:root:Generate JSON testset successfully: test/test.output.json
 ```
 
-### generated testset
-
-------
+## generated testset
 
 generated JSON testset ``output.json`` shows like this:
 

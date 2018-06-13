@@ -46,7 +46,7 @@ class PostmanParser(object):
             body = {}
             if item["request"]["body"] != {}:
                 mode = item["request"]["body"]["mode"]
-                if isinstance(mode, list):
+                if isinstance(item["request"]["body"][mode], list):
                     for param in item["request"]["body"][mode]:
                         body[param["key"]] = param["value"]
             request["json"] = body

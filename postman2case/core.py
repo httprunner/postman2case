@@ -49,8 +49,9 @@ class PostmanParser(object):
             body = {}
             if item["request"]["body"] != {}:
                 mode = item["request"]["body"]["mode"]
-                for param in item["request"]["body"][mode]:
-                    body[param["key"]] = param["value"]
+                if isinstance(mode, list):
+                    for param in item["request"]["body"][mode]:
+                        body[param["key"]] = param["value"]
             request["json"] = body
         else:
             request["url"] = url.split("?")[0]

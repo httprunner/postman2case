@@ -1,0 +1,21 @@
+{
+	"name": "test_post",
+	"request": {
+		"url": "http://www.baidu.com",
+		"method": "POST",
+		"header": [],
+		"body": {
+			"mode": "formdata",
+			"formdata": [
+				{
+					"key": "search",
+					"value": "123",
+					"description": "",
+					"type": "text"
+				}
+			]
+		},
+		"description": ""
+	},
+	"response": []
+}

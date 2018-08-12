@@ -1,0 +1,28 @@
+{
+    "name": "test_get",
+    "request": {
+        "url": {
+            "raw": "http://www.baidu.com?search=345",
+            "protocol": "http",
+            "host": [
+                "www",
+                "baidu",
+                "com"
+            ],
+            "query": [
+                {
+                    "key": "search",
+                    "value": "345",
+                    "equals": true,
+                    "description": ""
+                }
+            ],
+            "variable": []
+        },
+        "method": "GET",
+        "header": [],
+        "body": {},
+        "description": ""
+    },
+    "response": []
+}

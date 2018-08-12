@@ -4,6 +4,7 @@ import logging
 from collections import OrderedDict
 
 from postman2case.compat import ensure_ascii
+from postman2case.parser import parse_value_from_type
 
 
 class PostmanParser(object):
@@ -23,6 +24,7 @@ class PostmanParser(object):
         api["name"] = item["name"]
         api["def"] = item["name"]
         api["validate"] = []
+        api["variables"] = []
 
         request = {}
         request["method"] = item["request"]["method"]
@@ -48,7 +50,8 @@ class PostmanParser(object):
                 mode = item["request"]["body"]["mode"]
                 if isinstance(item["request"]["body"][mode], list):
                     for param in item["request"]["body"][mode]:
-                        body[param["key"]] = param["value"]
+                        api["variables"].append({param["key"]: parse_value_from_type(param["value"])})
+                        body[param["key"]] = "$"+param["key"]
             request["json"] = body
         else:
             request["url"] = url.split("?")[0]
@@ -60,7 +63,8 @@ class PostmanParser(object):
             body = {}
             if "query" in item["request"]["url"].keys():
                 for query in item["request"]["url"]["query"]:
-                    body[query["key"]] = query["value"]
+                    api["variables"].append({query["key"]: parse_value_from_type(query["value"])})
+                    body[query["key"]] = "$"+query["key"]
             request["params"] = body
 
         api["request"] = request

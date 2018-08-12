@@ -19,44 +19,24 @@ class TestParser(unittest.TestCase):
         self.assertEqual(content, other_content)
 
     def test_parse_each_item_get(self):
-        item = {
-			"name": "test_get",
-			"request": {
-				"url": {
-					"raw": "http://www.baidu.com?search=345",
-					"protocol": "http",
-					"host": [
-						"www",
-						"baidu",
-						"com"
-					],
-					"query": [
-						{
-							"key": "search",
-							"value": "345",
-							"equals": True,
-							"description": ""
-						}
-					],
-					"variable": []
-				},
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"description": ""
-			},
-			"response": []
-		}
+        with open("tests/data/test_get.json") as f:
+            item = json.load(f)
+        
         result = {
             "name": "test_get",
             "def": "test_get",
             "validate": [],
+            "variables": [
+                {
+                    "search": "345"
+                }
+            ],
             "request": {
                 "method": "GET",
                 "url": "http://www.baidu.com",
                 "headers": {},
                 "params": {
-                    "search": "345"
+                    "search": "$search"
                 }
             }
         }
@@ -65,37 +45,24 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, fun_result)
 
     def test_parse_each_item_post(self):
-        item = {
-			"name": "test_post",
-			"request": {
-				"url": "http://www.baidu.com",
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "search",
-							"value": "123",
-							"description": "",
-							"type": "text"
-						}
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		}
+        with open("tests/data/test_post.json") as f:
+            item = json.load(f)
+        
         result = {
             "name": "test_post",
             "def": "test_post",
             "validate": [],
+            "variables": [
+                {
+                    "search": "123"
+                }
+            ],
             "request": {
                 "method": "POST",
                 "url": "http://www.baidu.com",
                 "headers": {},
                 "json": {
-                    "search": "123"
+                    "search": "$search"
                 }
             }
         }

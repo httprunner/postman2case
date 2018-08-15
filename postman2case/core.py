@@ -12,7 +12,7 @@ class PostmanParser(object):
         self.postman_testcase_file = postman_testcase_file
 
     def read_postman_data(self):
-        with open(self.postman_testcase_file, 'r') as file:
+        with open(self.postman_testcase_file, encoding='utf-8', mode='r') as file:
             postman_data = json.load(file)
 
         return postman_data

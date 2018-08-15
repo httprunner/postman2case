@@ -13,13 +13,13 @@ class TestParser(unittest.TestCase):
         self.assertEqual(self.postman_parser.postman_testcase_file, "tests/data/test.json")
 
     def test_read_postman_data(self):
-        with open("tests/data/test.json") as f:
+        with open("tests/data/test.json", encoding='utf-8', mode='r') as f:
             content = json.load(f)
         other_content = self.postman_parser.read_postman_data()
         self.assertEqual(content, other_content)
 
     def test_parse_each_item_get(self):
-        with open("tests/data/test_get.json") as f:
+        with open("tests/data/test_get.json", encoding='utf-8', mode='r') as f:
             item = json.load(f)
         
         result = {
@@ -45,7 +45,7 @@ class TestParser(unittest.TestCase):
         self.assertEqual(result, fun_result)
 
     def test_parse_each_item_post(self):
-        with open("tests/data/test_post.json") as f:
+        with open("tests/data/test_post.json", encoding='utf-8', mode='r') as f:
             item = json.load(f)
         
         result = {

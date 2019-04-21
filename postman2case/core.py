@@ -1,6 +1,8 @@
 import io
 import json
 import logging
+import os
+import yaml
 from collections import OrderedDict
 
 from postman2case.compat import ensure_ascii
@@ -16,49 +18,38 @@ class PostmanParser(object):
             postman_data = json.load(file)
 
         return postman_data
+    
+    def parse_url(self, request_url):
+        url = ""
+        if isinstance(request_url, str):
+            url = request_url
+        elif isinstance(request_url, dict):
+            if "raw" in request_url.keys():
+                url= request_url["raw"]
+        return url
+    
+    def parse_header(self, request_header):
+        headers = {}
+        for header in request_header:
+            headers[header["key"]] = header["value"]
+        return headers
 
     def parse_each_item(self, item):
         """ parse each item in postman to testcase in httprunner
         """
         api = {}
         api["name"] = item["name"]
-        api["def"] = item["name"]
         api["validate"] = []
         api["variables"] = []
 
         request = {}
         request["method"] = item["request"]["method"]
 
-        url = ""
+        url = self.parse_url(item["request"]["url"])
 
-        if isinstance(item["request"]["url"], str):
-            url = item["request"]["url"]
-        elif isinstance(item["request"]["url"], dict):
-            if "raw" in item["request"]["url"].keys():
-                url= item["request"]["url"]["raw"]
-
-        if request["method"] == "POST":
-            request["url"] = url
-
-            headers = {}
-            for header in item["request"]["header"]:
-                headers[header["key"]] = header["value"]
-            request["headers"] = headers
-
-            body = {}
-            if item["request"]["body"] != {}:
-                mode = item["request"]["body"]["mode"]
-                if isinstance(item["request"]["body"][mode], list):
-                    for param in item["request"]["body"][mode]:
-                        api["variables"].append({param["key"]: parse_value_from_type(param["value"])})
-                        body[param["key"]] = "$"+param["key"]
-            request["json"] = body
-        else:
+        if request["method"] == "GET":
             request["url"] = url.split("?")[0]
-            headers = {}
-            for header in item["request"]["header"]:
-                headers[header["key"]] = header["value"]
-            request["headers"] = headers
+            request["headers"] = self.parse_header(item["request"]["header"])
 
             body = {}
             if "query" in item["request"]["url"].keys():
@@ -66,31 +57,83 @@ class PostmanParser(object):
                     api["variables"].append({query["key"]: parse_value_from_type(query["value"])})
                     body[query["key"]] = "$"+query["key"]
             request["params"] = body
+        else:
+            request["url"] = url
+            request["headers"] = self.parse_header(item["request"]["header"])
+
+            body = {}
+            if item["request"]["body"] != {}:
+                mode = item["request"]["body"]["mode"]
+                if isinstance(item["request"]["body"][mode], list):
+                    for param in item["request"]["body"][mode]:
+                        if param["type"] == "text":
+                            api["variables"].append({param["key"]: parse_value_from_type(param["value"])})
+                        else:
+                            api["variables"].append({param["key"]: parse_value_from_type(param["src"])})
+                        body[param["key"]] = "$"+param["key"]
+                elif isinstance(item["request"]["body"][mode], str):
+                    
+                    body = item["request"]["body"][mode]
+            request["data"] = body
 
         api["request"] = request
         return api
-
-    def gen_json(self, output_testset_file):
-        """ dump postman data to json testset
-        """
-        logging.debug("Start to generate JSON testset.")
-        postman_data = self.read_postman_data()
-
+    
+    def parse_items(self, items, folder_name=None):
         result = []
-
-        for folder in postman_data["item"]:
+        for folder in items:
             if "item" in folder.keys():
-                for item in folder["item"]:
-                    api = self.parse_each_item(item)
-                    result.append({"api": api})
+                name = folder["name"].replace(" ", "_")
+                if folder_name:
+                    name = os.path.join(folder_name, name)
+                temp = self.parse_items(folder["item"], name)
+                result += temp
             else:
                 api = self.parse_each_item(folder)
-                result.append({"api": api})
+                api["folder_name"] = folder_name
+                result.append(api)
+        return result
 
-        with io.open(output_testset_file, 'w', encoding="utf-8") as outfile:
-            my_json_str = json.dumps(result, ensure_ascii=ensure_ascii, indent=4)
-            if isinstance(my_json_str, bytes):
-                my_json_str = my_json_str.decode("utf-8")
+    def parse_data(self):
+        """ dump postman data to json testset
+        """
+        logging.info("Start to generate JSON testset.")
+        postman_data = self.read_postman_data()
 
-            outfile.write(my_json_str)
-        logging.info("Generate JSON testset successfully: {}".format(output_testset_file))
+        result = self.parse_items(postman_data["item"], None)
+        return result
+
+    def save(self, data, output_dir, output_file_type="json"):
+        count = 0
+        output_dir = os.path.join(output_dir, "api")
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+        for each_api in data:
+            count += 1
+            file_name = str(count) + "." + output_file_type
+            
+            folder_name = each_api.pop("folder_name")
+            if folder_name:
+                folder_path = os.path.join(output_dir, folder_name)
+                if not os.path.exists(folder_path):
+                    os.makedirs(folder_path)
+                file_path = os.path.join(folder_path, file_name)
+            else:
+                file_path = os.path.join(output_dir, file_name)
+            if os.path.isfile(file_path):
+                logging.error("{} file had exist.".format(file_path))
+                continue
+            if output_file_type == "json":
+                with io.open(file_path, 'w', encoding="utf-8") as outfile:
+                    my_json_str = json.dumps(each_api, ensure_ascii=ensure_ascii, indent=4)
+                    if isinstance(my_json_str, bytes):
+                        my_json_str = my_json_str.decode("utf-8")
+
+                    outfile.write(my_json_str)
+            else:
+                with io.open(file_path, 'w', encoding="utf-8") as outfile:
+                    my_json_str = json.dumps(each_api, ensure_ascii=ensure_ascii, indent=4)
+                    yaml.dump(each_api, outfile, allow_unicode=True, default_flow_style=False, indent=4)
+                    
+            logging.info("Generate JSON testset successfully: {}".format(file_path))
+            

@@ -1,6 +1,7 @@
 import unittest
 import os
 import json
+import shutil
 from postman2case.core import PostmanParser
 
 
@@ -17,6 +18,53 @@ class TestParser(unittest.TestCase):
             content = json.load(f)
         other_content = self.postman_parser.read_postman_data()
         self.assertEqual(content, other_content)
+    
+    def test_parse_url(self):
+        request_url = {
+            "raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+            "protocol": "https",
+            "host": [
+                "postman-echo",
+                "com"
+            ],
+            "path": [
+                "get"
+            ],
+            "query": [
+                {
+                    "key": "foo1",
+                    "value": "bar1"
+                },
+                {
+                    "key": "foo2",
+                    "value": "bar2"
+                }
+            ]
+        }
+        url = self.postman_parser.parse_url(request_url)
+        self.assertEqual(url, request_url["raw"])
+
+        request_url = "https://postman-echo.com/get?foo1=bar1&foo2=bar2"
+        url = self.postman_parser.parse_url(request_url)
+        self.assertEqual(url, request_url)
+
+    def test_parse_header(self):
+        request_header = [
+            {
+                "key": "Content-Type",
+                "name": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+            }
+        ]
+        target_header = {
+            "Content-Type": "application/json"
+        }
+        header = self.postman_parser.parse_header(request_header)
+        self.assertEqual(header, target_header)
+
+        header = self.postman_parser.parse_header([])
+        self.assertEqual(header, {})
 
     def test_parse_each_item_get(self):
         with open("tests/data/test_get.json", encoding='utf-8', mode='r') as f:
@@ -24,7 +72,6 @@ class TestParser(unittest.TestCase):
         
         result = {
             "name": "test_get",
-            "def": "test_get",
             "validate": [],
             "variables": [
                 {
@@ -50,7 +97,6 @@ class TestParser(unittest.TestCase):
         
         result = {
             "name": "test_post",
-            "def": "test_post",
             "validate": [],
             "variables": [
                 {
@@ -61,7 +107,7 @@ class TestParser(unittest.TestCase):
                 "method": "POST",
                 "url": "http://www.baidu.com",
                 "headers": {},
-                "json": {
+                "data": {
                     "search": "$search"
                 }
             }
@@ -69,8 +115,11 @@ class TestParser(unittest.TestCase):
         fun_result = self.postman_parser.parse_each_item(item)
         self.assertEqual(result, fun_result)
 
-    def test_gen_json(self):
-        output_file = "tests/data/output.json"
-        self.postman_parser.gen_json(output_file)
-        os.remove(output_file)
-
+    def test_parse_data(self):
+        result = self.postman_parser.parse_data()
+        self.assertEqual(len(result), 21)
+    
+    def test_save(self):
+        result = self.postman_parser.parse_data()
+        self.postman_parser.save(result, "save")
+        shutil.rmtree("save")

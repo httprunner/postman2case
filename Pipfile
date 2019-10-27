@@ -4,11 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-pyyaml = ">5.1"
+pyyaml = "*"
 
 [dev-packages]
 coverage = "*"
 coveralls = "*"
 twine = "*"
 
-[scripts]
+[requires]
+python_version = "3.7"
